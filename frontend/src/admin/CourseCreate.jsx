@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
+import { BACKEND_URL } from "../utils/utils";
 function CourseCreate() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -33,13 +33,13 @@ function CourseCreate() {
     const admin = JSON.parse(localStorage.getItem("admin"));
     const token = admin.token;
     if (!token) {
-      navigate("http://localhost:4001/api/v1/admin/login");
+      navigate("/admin/login");
       return;
     }
 
     try {
       const response = await axios.post(
-        `http://localhost:4001/api/v1/course/create`,
+        `${BACKEND_URL}/course/create`,
         formData,
         {
           headers: {

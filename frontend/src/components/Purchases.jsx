@@ -8,7 +8,7 @@ import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { RiHome2Fill } from "react-icons/ri";
 import { HiMenu, HiX } from "react-icons/hi"; // Icons for sidebar toggle
 import { Link, useNavigate } from "react-router-dom";
-
+import { BACKEND_URL } from "../utils/utils";
 
 function Purchases() {
   const [purchases, setPurchase] = useState([]);
@@ -32,18 +32,15 @@ function Purchases() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
-  
+  if (!token) {
+    navigate("/login");
+  }
 
   // Fetch purchases
   useEffect(() => {
     const fetchPurchases = async () => {
       try {
-        const response = await axios.get(`http://localhost:4001/api/v1/user/purchases`, {
+        const response = await axios.get(`${BACKEND_URL}/user/purchases`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +57,7 @@ function Purchases() {
   // Logout
   const handleLogout = async () => {
     try {
-      const response = await axios.get(`http://localhost:4001/api/v1/user/logout`, {
+      const response = await axios.get(`${BACKEND_URL}/user/logout`, {
         withCredentials: true,
       });
       toast.success(response.data.message);

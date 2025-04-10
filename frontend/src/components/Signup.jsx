@@ -3,6 +3,8 @@ import logo from "../../public/logo.webp";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "../utils/utils";
+
 function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -11,14 +13,14 @@ function Signup() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  
-const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post(
-        "http://localhost:4001/api/v1/user/signup",
+        `${BACKEND_URL}/user/signup`,
         {
           firstName,
           lastName,
@@ -32,10 +34,9 @@ const navigate=useNavigate();
           },
         }
       );
-      console.log("Signup successful: ", response.data);
-     toast.success(response.data.message);
+      console.log("Sugnup successful: ", response.data);
+      toast.success(response.data.message);
       navigate("/login");
-    
     } catch (error) {
       if (error.response) {
         setErrorMessage(error.response.data.errors || "Signup failed!!!");

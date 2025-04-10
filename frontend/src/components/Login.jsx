@@ -3,21 +3,21 @@ import logo from "../../public/logo.webp";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "../utils/utils";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post(
-        "http://localhost:4001/api/v1/user/login",
+        `${BACKEND_URL}/user/login`,
         {
           email,
           password,
@@ -30,12 +30,8 @@ function Login() {
         }
       );
       console.log("Login successful: ", response.data);
-      toast.success(response.data.message)
-      localStorage.setItem("user", JSON.stringify({
-        token:response.data.token,
-        user:response.data.user,
-      })
-    );
+      toast.success(response.data.message);
+      localStorage.setItem("user", JSON.stringify(response.data));
       navigate("/");
     } catch (error) {
       if (error.response) {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-
+import { BACKEND_URL } from "../utils/utils";
 function Buy() {
   const { courseId } = useParams();
   const [loading, setLoading] = useState(false);
@@ -20,21 +20,15 @@ function Buy() {
   const elements = useElements();
   const [cardError, setCardError] = useState("");
 
-  
-  
-  
+  if (!token) {
+    navigate("/login");
+  }
+
   useEffect(() => {
     const fetchBuyCourseData = async () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-    const token = user?.token;
-
-    if (!token) {
-      setError("Please login topurchase the course");
-      return;
-    }
       try {
         const response = await axios.post(
-          `http://localhost:4001/api/v1/course/buy/${courseId}`,
+          `${BACKEND_URL}/course/buy/${courseId}`,
           {},
           {
             headers: {
@@ -50,10 +44,9 @@ function Buy() {
       } catch (error) {
         setLoading(false);
         if (error?.response?.status === 400) {
-            navigate("/purchases");
-          }
-          
-         else {
+          setError("you have already purchased this course");
+          navigate("/purchases");
+        } else {
           setError(error?.response?.data?.errors);
         }
       }
@@ -110,8 +103,7 @@ function Buy() {
       setCardError(confirmError.message);
     } else if (paymentIntent.status === "succeeded") {
       console.log("Payment succeeded: ", paymentIntent);
-      setCardError(`Your payment ID: ${paymentIntent.id}`);
-
+      setCardError("your payment id: ", paymentIntent.id);
       const paymentInfo = {
         email: user?.user?.email,
         userId: user.user._id,
@@ -122,7 +114,7 @@ function Buy() {
       };
       console.log("Payment info: ", paymentInfo);
       await axios
-        .post("http://localhost:4001/api/v1/order", paymentInfo, {
+        .post(`${BACKEND_URL}/order`, paymentInfo, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
